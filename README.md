@@ -1,8 +1,3 @@
-Voici une proposition de `README.md` frais, clair et motivant pour présenter votre projet. Il remplace le texte générique de Vite et met en valeur l'ambition de votre application.
-
-Vous pouvez copier-coller ce contenu directement dans votre fichier `README.md` :
-
-```markdown
 # 📔 Trace
 
 **Trace** est une application de journal intime personnel conçue pour iOS. Inspirée des mécaniques de *BeReal*, elle invite l'utilisateur à capturer l'essence de sa journée à travers un court texte et une photo, le tout dans une interface chaleureuse rappelant un carnet papier.
@@ -41,5 +36,3 @@ bun dev
 
 
 4. Ouvrir `http://localhost:5173` dans le navigateur.
-
-```
