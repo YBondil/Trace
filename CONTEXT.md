@@ -29,7 +29,12 @@ L'objectif est de développer une application iOS à usage strictement personnel
 - Atmosphère : Chaleureuse, personnelle, papier, typographies soignées (manuscrites ou classiques type serif). L'interface doit inviter à l'introspection sans être surchargée.
 
 ## État actuel du projet
-Démarrage du projet. Le dépôt vient d'être initialisé. Tout est à concevoir.
+**Phase 1 en cours : Version Web "Déconnectée" (SolidJS)**
+- **Terminé :** Architecture de base, Routeur (`@solidjs/router`) et navigation.
+- **Terminé :** Maquette UI/UX de base (thème "Carnet", typographies, couleurs).
+- **Terminé :** Écran "Aujourd'hui" (`DailyEntry.jsx`) fonctionnel. Gestion de la saisie de texte et de l'upload d'images multiples (conversion Base64) avec sauvegarde locale temporaire (`localStorage`). Affichage galerie type Polaroïd et suppression d'images gérée.
+- **En cours / À faire :** Transformer la sauvegarde temporaire en un historique persistant basé sur la date du jour. -> début du backend 
+- **À suivre :** Développement de la vue Calendrier (`Calendar.jsx`) pour visualiser l'historique local, puis passage à la Phase 2 (Wrapper Mobile Capacitor).
 
 ## Directives pour l'assistant IA
 - Fournir des exemples de code en SolidJS (et non React) avec l'utilisation des hooks spécifiques à SolidJS (createSignal, createEffect, etc.).
