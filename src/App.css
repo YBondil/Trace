@@ -68,3 +68,153 @@ nav a.active-link {
     color: var(--accent-color);
     border-bottom: 2px solid var(--accent-color);
 }
+/* --- LE FOND DE L'APPLICATION (Le "bureau") --- */
+body {
+    /* On assombrit légèrement le fond global pour faire ressortir la feuille */
+    background-color: #edebe6;
+}
+
+/* --- LA FEUILLE DE PAPIER --- */
+.page {
+    background-color: var(--paper-bg);
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 40px 50px;
+
+    /* Effet 3D d'un carnet : bordure gauche droite et ombre portée */
+    border-radius: 2px 15px 15px 2px;
+    box-shadow:
+        -5px 0 10px rgba(0, 0, 0, 0.03),
+        /* Ombre de la reliure à gauche */ 5px 5px 20px rgba(0, 0, 0, 0.08); /* Ombre de la page sur le bureau */
+
+    position: relative;
+}
+
+/* --- L'EN-TÊTE DE LA PAGE --- */
+.date-header {
+    border-bottom: 2px solid var(--accent-color);
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding-bottom: 10px;
+}
+
+.date-text {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.prompt-text {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--ink-light);
+    font-style: italic;
+}
+
+/* --- LE TEXTAREA (Les lignes du cahier) --- */
+.notebook-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: none;
+    background-color: transparent;
+    resize: none; /* Empêche de casser les lignes, on gère avec "rows" */
+
+    /* Typographie */
+    color: var(--ink-dark);
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+
+    /* Le secret des lignes ! La hauteur de ligne (32px) DOIT correspondre à la taille du dégradé */
+    line-height: 32px;
+
+    /* Création des lignes bleutées comme un vrai cahier */
+    background-image: repeating-linear-gradient(
+        transparent,
+        transparent 31px,
+        #cbd5e1 31px,
+        #cbd5e1 32px
+    );
+
+    /* Pour que le texte s'aligne parfaitement sur la ligne */
+    padding-top: 6px;
+}
+
+.notebook-textarea:focus {
+    outline: none; /* Enlève la bordure bleue par défaut des navigateurs */
+}
+
+/* --- BOUTONS ET INPUTS --- */
+.actions-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+}
+
+.btn-save {
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-family: var(--font-sans);
+    border-radius: 4px;
+    cursor: pointer;
+    transition:
+        opacity 0.2s ease,
+        transform 0.1s;
+}
+
+.btn-save:hover {
+    opacity: 0.9;
+}
+
+.btn-save:active {
+    transform: scale(0.98);
+}
+
+.file-input {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: var(--ink-light);
+}
+
+/* --- GALERIE PHOTO (Style Polaroid) --- */
+.photo-gallery {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.polaroid-photo {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+    background: white;
+    padding: 8px 8px 25px 8px;
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+    transform: rotate(-2deg);
+
+    /* On passe de 0.3s ease à 0.1s ease-out pour un effet immédiat */
+    transition:
+        transform 0.1s ease-out,
+        box-shadow 0.1s ease-out;
+}
+
+.polaroid-photo:nth-child(even) {
+    transform: rotate(3deg);
+}
+
+.polaroid-photo:hover {
+    transform: rotate(0deg) scale(1.05);
+    /* L'ombre s'agrandit instantanément pour donner du relief */
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.25);
+    z-index: 10;
+}

@@ -1,15 +1,7 @@
-import { Routes, Route, A } from "@solidjs/router";
+import { A } from "@solidjs/router";
 import "./App.css";
 
-function DailyEntry(props) {
-  return (
-    <div class="page">
-      <p>{JSON.stringify(Date.now())}</p>
-      <p>Trace time !</p>
-    </div>
-  );
-}
-function App() {
+function App(props) {
   return (
     <div class="journal-container">
       <header class="journal-header">
@@ -26,10 +18,8 @@ function App() {
       </header>
 
       <main class="journal-content">
-        <Routes>
-          <Route path="/" component={DailyEntry} />
-          <Route path="/calendar" component={Calendar} />
-        </Routes>
+        {/* C'est ici que le routeur injectera DailyEntry ou Calendar */}
+        {props.children}
       </main>
     </div>
   );
