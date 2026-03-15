@@ -28,10 +28,20 @@ function DailyEntry() {
     files.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setPhotos([...photos(), reader.result]);
+        setPhotos([
+          ...photos(),
+          { id: crypto.randomUUID(), data: reader.result },
+        ]);
       };
       reader.readAsDataURL(file);
     });
+  };
+  const deletePhoto = (photo) => {
+    setPhotos(
+      photos().filter((item) => {
+        return item.id !== photo.id;
+      }),
+    );
   };
 
   return (
@@ -48,7 +58,7 @@ function DailyEntry() {
         rows="10"
         onInput={(e) => {
           setUserText(e.currentTarget.value);
-          setSaved(false); // Réinitialise le statut de sauvegarde si on modifie
+          setSaved(false);
         }}
         value={userText()}
         placeholder="Cher journal..."
@@ -58,9 +68,13 @@ function DailyEntry() {
         <button class="btn-save" onClick={() => saveText()}>
           {saved() ? "Sauvegardé ✓" : "Sauvegarder"}
         </button>
+        <label for="photo-upload" class="btn-upload">
+          📸 Ajouter une photo
+        </label>
         <input
+          id="photo-upload"
           type="file"
-          class="file-input"
+          class="file-input-hidden"
           accept="image/*"
           onChange={handlePhotos}
           multiple
@@ -71,7 +85,20 @@ function DailyEntry() {
         <div class="photo-gallery">
           <For each={photos()}>
             {(photo) => (
-              <img src={photo} alt="Ma trace du jour" class="polaroid-photo" />
+              <div class="polaroid-wrapper">
+                <img
+                  src={photo.data}
+                  alt="Ma trace du jour"
+                  class="polaroid-image"
+                />
+                <button
+                  class="delete-btn"
+                  onClick={() => deletePhoto(photo)}
+                  title="Supprimer la photo"
+                >
+                  ×
+                </button>
+              </div>
             )}
           </For>
         </div>

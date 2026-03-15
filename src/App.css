@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap");
+
 :root {
     --paper-bg: #fdfbf7;
     --ink-dark: #2c2825;
@@ -5,20 +7,23 @@
     --accent-color: #c05c3b; /* Une couleur rouille/terracotta chaleureuse */
     --border-color: #e3ddd5;
 
-    /* Typographie classique et élégante */
+    /* Typographie */
     --font-serif: "Georgia", "Times New Roman", serif;
     --font-sans: system-ui, -apple-system, sans-serif;
 }
 
+/* --- LE FOND DE L'APPLICATION (Le "bureau") --- */
 body {
     margin: 0;
-    background-color: var(--paper-bg);
+    /* On assombrit légèrement le fond global pour faire ressortir la feuille */
+    background-color: #edebe6;
     color: var(--ink-dark);
     font-family: var(--font-serif);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
 }
 
+/* --- CONTENEUR GLOBAL --- */
 .journal-container {
     max-width: 600px;
     margin: 0 auto;
@@ -28,6 +33,7 @@ body {
     padding: 0 20px;
 }
 
+/* --- NAVIGATION --- */
 .journal-header {
     padding: 30px 0;
     border-bottom: 2px solid var(--border-color);
@@ -63,15 +69,9 @@ nav a:hover {
     color: var(--ink-dark);
 }
 
-/* Classe appliquée automatiquement par @solidjs/router quand le lien est actif */
 nav a.active-link {
     color: var(--accent-color);
     border-bottom: 2px solid var(--accent-color);
-}
-/* --- LE FOND DE L'APPLICATION (Le "bureau") --- */
-body {
-    /* On assombrit légèrement le fond global pour faire ressortir la feuille */
-    background-color: #edebe6;
 }
 
 /* --- LA FEUILLE DE PAPIER --- */
@@ -90,7 +90,7 @@ body {
     position: relative;
 }
 
-/* --- L'EN-TÊTE DE LA PAGE --- */
+/* --- L'EN-TÊTE DE LA PAGE (Date et prompt) --- */
 .date-header {
     border-bottom: 2px solid var(--accent-color);
     margin-bottom: 30px;
@@ -102,16 +102,17 @@ body {
 
 .date-text {
     margin: 0;
-    font-size: 1.2rem;
-    font-weight: bold;
+    font-size: 1.8rem;
+    font-family: "Caveat", cursive;
+    font-weight: 600;
     color: var(--accent-color);
 }
 
 .prompt-text {
     margin: 0;
-    font-size: 0.9rem;
+    font-size: 1.4rem;
+    font-family: "Caveat", cursive;
     color: var(--ink-light);
-    font-style: italic;
 }
 
 /* --- LE TEXTAREA (Les lignes du cahier) --- */
@@ -120,17 +121,18 @@ body {
     box-sizing: border-box;
     border: none;
     background-color: transparent;
-    resize: none; /* Empêche de casser les lignes, on gère avec "rows" */
+    resize: none;
 
-    /* Typographie */
+    /* Typographie manuscrite */
     color: var(--ink-dark);
-    font-family: var(--font-serif);
-    font-size: 1.1rem;
+    font-family: "Caveat", cursive;
+    font-size: 1.6rem;
+    font-weight: 500;
+    letter-spacing: 0.5px;
 
-    /* Le secret des lignes ! La hauteur de ligne (32px) DOIT correspondre à la taille du dégradé */
+    /* Le secret des lignes ! */
     line-height: 32px;
 
-    /* Création des lignes bleutées comme un vrai cahier */
     background-image: repeating-linear-gradient(
         transparent,
         transparent 31px,
@@ -138,15 +140,15 @@ body {
         #cbd5e1 32px
     );
 
-    /* Pour que le texte s'aligne parfaitement sur la ligne */
-    padding-top: 6px;
+    /* On ajuste le padding pour que le bas des lettres touche bien la ligne */
+    padding-top: 5px;
 }
 
 .notebook-textarea:focus {
-    outline: none; /* Enlève la bordure bleue par défaut des navigateurs */
+    outline: none;
 }
 
-/* --- BOUTONS ET INPUTS --- */
+/* --- BOUTONS ET ACTIONS --- */
 .actions-container {
     display: flex;
     justify-content: space-between;
@@ -164,23 +166,45 @@ body {
     font-family: var(--font-sans);
     border-radius: 4px;
     cursor: pointer;
-    transition:
-        opacity 0.2s ease,
-        transform 0.1s;
+    transition: all 0.1s ease-out;
 }
 
 .btn-save:hover {
     opacity: 0.9;
+    transform: translateY(-1px);
 }
 
 .btn-save:active {
-    transform: scale(0.98);
+    transform: translateY(1px) scale(0.97);
 }
 
-.file-input {
+/* --- LE BOUTON D'AJOUT DE PHOTO --- */
+.file-input-hidden {
+    display: none;
+}
+
+.btn-upload {
+    background-color: transparent;
+    color: var(--accent-color);
+    border: 2px solid var(--accent-color);
+    padding: 8px 20px;
+    font-size: 1rem;
     font-family: var(--font-sans);
-    font-size: 0.9rem;
-    color: var(--ink-light);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.1s ease-out;
+    display: inline-block;
+    text-align: center;
+}
+
+.btn-upload:hover {
+    background-color: var(--accent-color);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.btn-upload:active {
+    transform: translateY(1px) scale(0.97);
 }
 
 /* --- GALERIE PHOTO (Style Polaroid) --- */
@@ -192,29 +216,123 @@ body {
     margin-top: 30px;
 }
 
-.polaroid-photo {
-    max-width: 150px;
-    max-height: 150px;
-    object-fit: cover;
+.polaroid-wrapper {
+    position: relative;
     background: white;
     padding: 8px 8px 25px 8px;
     box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
     border-radius: 2px;
     transform: rotate(-2deg);
-
-    /* On passe de 0.3s ease à 0.1s ease-out pour un effet immédiat */
     transition:
         transform 0.1s ease-out,
         box-shadow 0.1s ease-out;
+    display: inline-block;
 }
 
-.polaroid-photo:nth-child(even) {
+.polaroid-wrapper:nth-child(even) {
     transform: rotate(3deg);
 }
 
-.polaroid-photo:hover {
+.polaroid-wrapper:hover {
     transform: rotate(0deg) scale(1.05);
-    /* L'ombre s'agrandit instantanément pour donner du relief */
     box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.25);
     z-index: 10;
+}
+
+.polaroid-image {
+    max-width: 150px;
+    max-height: 150px;
+    object-fit: cover;
+    display: block;
+}
+
+/* --- BOUTON DE SUPPRESSION DE PHOTO --- */
+.delete-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+    /* Invisible par défaut sur PC */
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.1s ease-out;
+}
+
+.polaroid-wrapper:hover .delete-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.delete-btn:hover {
+    background-color: #c9302c;
+    transform: scale(1.15) !important;
+}
+
+.delete-btn:active {
+    transform: scale(0.9) !important;
+}
+
+/* =========================================
+   📱 ADAPTATIONS POUR MOBILE (Responsive)
+   ========================================= */
+@media (max-width: 768px) {
+    .page {
+        margin: 15px;
+        padding: 25px 20px;
+        border-radius: 8px;
+    }
+
+    .date-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+        padding-bottom: 15px;
+    }
+
+    .actions-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+    }
+
+    .btn-save,
+    .btn-upload {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 15px;
+        font-size: 1.1rem;
+    }
+
+    .polaroid-image {
+        max-width: 110px;
+        max-height: 110px;
+    }
+
+    .polaroid-wrapper {
+        padding: 6px 6px 20px 6px;
+    }
+
+    /* Toujours visible sur mobile */
+    .delete-btn {
+        opacity: 1;
+        transform: scale(1);
+        width: 32px;
+        height: 32px;
+        top: -12px;
+        right: -12px;
+        font-size: 18px;
+    }
 }
