@@ -26,13 +26,13 @@ Actuellement, le projet est en **Phase 1** (Version Web déconnectée avec persi
    ```bash
    bun install
 
-```
+    ```
 
 3. Lancer le serveur de développement :
-```bash
-bun dev
+   ```bash
+   bun dev
 
-```
+    ```
 
 
 4. Ouvrir `http://localhost:5173` dans le navigateur.
