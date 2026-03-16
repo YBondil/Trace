@@ -1,15 +1,9 @@
-import { createSignal, createEffect, For, Show } from "solid-js";
+import { createSignal, createEffect, For, Show, onMount } from "solid-js";
 
 function DailyEntry() {
-  const [userText, setUserText] = createSignal(
-    localStorage.getItem("todayText") || "",
-  );
-  const [saved, setSaved] = createSignal(
-    JSON.parse(localStorage.getItem("daySaved")) || false,
-  );
-  const [photos, setPhotos] = createSignal(
-    JSON.parse(localStorage.getItem("todayPhoto")) || [],
-  );
+  const [userText, setUserText] = createSignal("");
+  const [saved, setSaved] = createSignal(false);
+  const [photos, setPhotos] = createSignal([]);
 
   createEffect(() => {
     if (saved()) {
@@ -17,31 +11,72 @@ function DailyEntry() {
       localStorage.setItem("todayPhoto", JSON.stringify(photos()));
     }
   });
+  onMount(async () => {
+    try {
+      const response = await fetch("http://localhost:3000/api/entries/latest");
+      if (response.ok) {
+        const data = await response.json();
+        setUserText(data.content);
 
-  const saveText = () => {
-    setSaved(true);
-    localStorage.setItem("todayText", userText());
+        // Si le serveur nous a renvoyé des URLs d'images
+        if (data.photoUrls && data.photoUrls.length > 0) {
+          const loadedPhotos = data.photoUrls.map((url) => ({
+            id: crypto.randomUUID(),
+            preview: url, // On utilise directement l'URL publique de Cloudflare
+            file: null, // Pas de fichier physique car il est déjà sur le serveur
+          }));
+          setPhotos(loadedPhotos);
+        }
+
+        setSaved(true);
+      }
+    } catch (error) {
+      console.error("Impossible de récupérer l'historique :", error);
+    }
+  });
+  const saveText = async () => {
+    const formData = new FormData();
+    formData.append("text", userText());
+    formData.append("date", new Date().toISOString());
+
+    photos().forEach((photo) => {
+      formData.append("photos", photo.file);
+    });
+
+    try {
+      const response = await fetch("http://localhost:3000/api/entries", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Réponse du serveur :", data);
+        setSaved(true);
+      } else {
+        console.error("Erreur côté serveur");
+      }
+    } catch (error) {
+      console.error("Impossible de joindre le serveur :", error);
+    }
   };
-
   const handlePhotos = (e) => {
     const files = Array.from(e.target.files);
-    files.forEach((file) => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotos([
-          ...photos(),
-          { id: crypto.randomUUID(), data: reader.result },
-        ]);
+
+    const newPhotos = files.map((file) => {
+      return {
+        id: crypto.randomUUID(),
+        file: file,
+        preview: URL.createObjectURL(file),
       };
-      reader.readAsDataURL(file);
     });
+
+    setPhotos([...photos(), ...newPhotos]);
+    setSaved(false);
   };
+
   const deletePhoto = (photo) => {
-    setPhotos(
-      photos().filter((item) => {
-        return item.id !== photo.id;
-      }),
-    );
+    setPhotos(photos().filter((item) => item.id !== photo.id));
   };
 
   return (
@@ -86,8 +121,9 @@ function DailyEntry() {
           <For each={photos()}>
             {(photo) => (
               <div class="polaroid-wrapper">
+                {/* On utilise photo.preview au lieu de photo.data */}
                 <img
-                  src={photo.data}
+                  src={photo.preview}
                   alt="Ma trace du jour"
                   class="polaroid-image"
                 />
