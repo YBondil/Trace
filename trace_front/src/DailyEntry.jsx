@@ -159,17 +159,12 @@ function DailyEntry() {
         }
       >
         {/* --- ÉCRAN "DÉJÀ FAIT" --- */}
-        <div
-          class="already-done-container"
-          style={{ "text-align": "center", padding: "40px 20px" }}
-        >
-          <div style={{ "font-size": "4rem", "margin-bottom": "20px" }}>✨</div>
+        <div class="already-done-container">
+          <div class="status-icon">✨</div>
           <h2 style={{ "margin-bottom": "10px" }}>
             Vous avez déjà une trace d'aujourd'hui !
           </h2>
-          <p style={{ color: "#666", "margin-bottom": "30px" }}>
-            Revenez demain pour une nouvelle exploration.
-          </p>
+          <p>Revenez demain pour une nouvelle exploration.</p>
 
           <div
             style={{

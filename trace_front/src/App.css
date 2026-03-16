@@ -336,3 +336,209 @@ nav a.active-link {
         font-size: 18px;
     }
 }
+/* --- COMPOSANT : DailyEntry --- */
+
+/* Conteneur pour l'écran "Déjà fait" */
+.already-done-container {
+    text-align: center;
+    padding: 60px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.already-done-container h2 {
+    font-family: var(--font-serif);
+    color: var(--ink-dark);
+    margin: 0;
+}
+
+.already-done-container p {
+    color: var(--ink-light);
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+/* Aperçu de la trace du jour sur l'écran verrouillé */
+.preview-today {
+    margin-top: 50px;
+    padding: 20px;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+}
+
+.preview-today p {
+    font-family: "Caveat", cursive;
+    font-size: 1.4rem;
+    font-style: italic;
+    color: var(--ink-dark);
+    opacity: 0.8;
+}
+
+/* Bouton d'annulation */
+.btn-cancel {
+    background-color: transparent;
+    color: var(--ink-light);
+    border: 1px solid var(--border-color);
+    padding: 8px 15px;
+    font-family: var(--font-sans);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+    background-color: #f0f0f0;
+    color: var(--ink-dark);
+}
+/* --- COMPOSANT : Calendar --- */
+
+/* Conteneur principal du calendrier */
+.calendar-container {
+    max-width: 450px;
+    margin: 20px auto;
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+/* Navigation (Mois précédent / suivant) */
+.calendar-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.calendar-nav h3 {
+    margin: 0;
+    text-transform: capitalize;
+    font-family: var(--font-serif);
+    color: var(--ink-dark);
+    font-weight: normal;
+}
+
+.nav-btn {
+    cursor: pointer;
+    border: none;
+    background: #f5f3f0;
+    color: var(--ink-light);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background: var(--accent-color);
+    color: white;
+}
+
+/* Grille des jours */
+.week-days-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: bold;
+    color: var(--ink-light);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+/* Cellule du jour */
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background-color: #fdfbf7;
+    color: #d1cbc5;
+    font-size: 1rem;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Jour avec une trace enregistrée */
+.calendar-day.has-trace {
+    background-color: var(--accent-color);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 5px rgba(192, 92, 59, 0.3);
+}
+
+.calendar-day.has-trace:hover {
+    transform: scale(1.15);
+    z-index: 2;
+    box-shadow: 0 5px 15px rgba(192, 92, 59, 0.4);
+}
+
+/* Vue détaillée d'une trace dans le calendrier */
+.entry-detail {
+    background-color: #fcfaf7;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border-left: 4px solid var(--accent-color);
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.detail-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.entry-detail h3 {
+    font-family: "Caveat", cursive;
+    font-size: 1.8rem;
+    color: var(--accent-color);
+    margin-top: 0;
+}
+
+.entry-detail p {
+    font-family: "Caveat", cursive;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    color: var(--ink-dark);
+}
+
+/* Formulaire d'édition dans le calendrier */
+.edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.edit-textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    font-family: "Caveat", cursive;
+    font-size: 1.4rem;
+    background-color: white;
+}
+
+.edit-actions {
+    display: flex;
+    gap: 10px;
+}

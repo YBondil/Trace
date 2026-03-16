@@ -388,35 +388,8 @@ function Calendar() {
 
                 return (
                   <div
+                    class={`calendar-day ${hasTrace ? "has-trace" : ""}`}
                     onClick={() => (hasTrace ? loadEntry(traceId) : null)}
-                    style={{
-                      "aspect-ratio": "1", // Rend la case parfaitement carrée
-                      display: "flex",
-                      "align-items": "center",
-                      "justify-content": "center",
-                      "border-radius": "8px",
-                      // C'est ici qu'on gère les couleurs ! Vert si une trace existe.
-                      "background-color": hasTrace ? "#4CAF50" : "#f9f9f9",
-                      color: hasTrace ? "white" : "#ccc",
-                      cursor: hasTrace ? "pointer" : "default",
-                      "font-weight": hasTrace ? "bold" : "normal",
-                      transition: "transform 0.1s, box-shadow 0.1s",
-                    }}
-                    // Petits effets de survol en JavaScript
-                    onMouseEnter={(e) =>
-                      hasTrace
-                        ? ((e.currentTarget.style.transform = "scale(1.1)"),
-                          (e.currentTarget.style.boxShadow =
-                            "0 2px 5px rgba(0,0,0,0.2)"))
-                        : null
-                    }
-                    onMouseLeave={(e) =>
-                      hasTrace
-                        ? ((e.currentTarget.style.transform = "scale(1)"),
-                          (e.currentTarget.style.boxShadow = "none"))
-                        : null
-                    }
-                    title={hasTrace ? "Lire la trace" : "Pas de trace ce jour"}
                   >
                     {dateObj.getDate()}
                   </div>
