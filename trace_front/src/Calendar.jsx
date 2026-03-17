@@ -16,6 +16,7 @@ function Calendar() {
       );
       if (response.ok) {
         const data = await response.json();
+        console.log("Données du calendrier :", data); // <-- AJOUTE CETTE LIGNE
         setEntryDates(data);
       }
     } catch (error) {
@@ -405,11 +406,8 @@ function Calendar() {
                     // On surcharge la couleur de fond dynamique ici
                     style={
                       hasTrace()
-                        ? {
-                            backgroundColor: traceData().color,
-                            color: "white",
-                          }
-                        : {}
+                        ? `background-color: ${traceData().color} !important; color: white;`
+                        : ""
                     }
                   >
                     {dateObj.getDate()}

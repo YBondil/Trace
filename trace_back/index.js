@@ -81,15 +81,15 @@ app.get("/api/entries/latest", async (req, res) => {
 // upload.array('photos') dit à Express de s'attendre à recevoir une ou plusieurs images
 app.post("/api/entries", upload.array("photos"), async (req, res) => {
   try {
-    const { text, date } = req.body;
+    // 1. On récupère text, date ET color
+    const { text, date, color } = req.body;
     const files = req.files; // Les images récupérées par Multer
 
     let uploadedPhotos = [];
 
-    // 1. Envoi des images vers Cloudflare R2
+    // Envoi des images vers Cloudflare R2
     if (files && files.length > 0) {
       for (const file of files) {
-        // On génère un nom unique pour ne pas écraser d'anciennes photos (ex: 17105000-photo.jpg)
         const fileName = `${Date.now()}-${file.originalname.replace(/\s+/g, "_")}`;
 
         const command = new PutObjectCommand({
@@ -99,19 +99,23 @@ app.post("/api/entries", upload.array("photos"), async (req, res) => {
           ContentType: file.mimetype,
         });
 
-        // On expédie le fichier dans le Bucket
         await s3Client.send(command);
-
-        // On retient le nom du fichier pour la base de données
         uploadedPhotos.push(fileName);
       }
     }
 
-    // 2. Sauvegarde du texte et du nom des images dans PostgreSQL
+    // 2. Sauvegarde du texte, du nom des images ET de la couleur dans PostgreSQL
+    // On ajoute 'color' à la liste des colonnes et '$4' aux valeurs
     const query =
-      "INSERT INTO entries (content, date, photos) VALUES ($1, $2, $3) RETURNING *";
-    // On transforme notre tableau de noms en texte JSON pour la BDD
-    const values = [text, date, JSON.stringify(uploadedPhotos)];
+      "INSERT INTO entries (content, date, photos, color) VALUES ($1, $2, $3, $4) RETURNING *";
+
+    // 3. On passe la couleur en 4ème paramètre (avec le vert par défaut si jamais la couleur n'est pas envoyée)
+    const values = [
+      text,
+      date,
+      JSON.stringify(uploadedPhotos),
+      color || "#4CAF50",
+    ];
 
     const result = await pool.query(query, values);
 
@@ -128,8 +132,8 @@ app.post("/api/entries", upload.array("photos"), async (req, res) => {
 // Route pour récupérer toutes les dates d'entrées
 app.get("/api/entries/dates", async (req, res) => {
   try {
-    // On demande maintenant l'id ET la date
-    const query = "SELECT id, date FROM entries ORDER BY date DESC";
+    // On demande maintenant l'id, la date ET la couleur
+    const query = "SELECT id, date, color FROM entries ORDER BY date DESC";
     const result = await pool.query(query);
 
     // On renvoie directement les objets au lieu d'un simple tableau de textes
@@ -139,20 +143,7 @@ app.get("/api/entries/dates", async (req, res) => {
     res.status(500).send({ message: "Erreur serveur" });
   }
 });
-// Route pour récupérer une entrée spécifique par sa date exacte
-app.get("/api/entries/dates", async (req, res) => {
-  try {
-    // On demande maintenant l'id ET la date
-    const query = "SELECT id, date FROM entries ORDER BY date DESC";
-    const result = await pool.query(query);
 
-    // On renvoie directement les objets au lieu d'un simple tableau de textes
-    res.status(200).send(result.rows);
-  } catch (error) {
-    console.error("Erreur lors de la récupération des dates :", error);
-    res.status(500).send({ message: "Erreur serveur" });
-  }
-});
 // Route pour récupérer une entrée spécifique par son ID
 app.get("/api/entries/:id", async (req, res) => {
   try {
@@ -229,14 +220,23 @@ app.post(
   "/api/entries/:id/update",
   upload.array("photos"),
   async (req, res) => {
-    console.log("🛠️ Requête de modification reçue pour l'ID :", req.params.id); // Ajoute ce log pour tester
+    console.log("🛠️ Requête de modification reçue pour l'ID :", req.params.id);
     try {
       const id = req.params.id;
-      const { text } = req.body;
+      // 1. On récupère le texte ET la couleur
+      const { text, color } = req.body;
 
+      // 2. On met à jour la requête SQL pour inclure la couleur
+      // (J'ajoute un fallback '#4CAF50' au cas où une vieille requête n'aurait pas de couleur)
       const updateQuery =
-        "UPDATE entries SET content = $1 WHERE id = $2 RETURNING *";
-      const result = await pool.query(updateQuery, [text, id]);
+        "UPDATE entries SET content = $1, color = $2 WHERE id = $3 RETURNING *";
+
+      // 3. On passe les 3 paramètres dans le bon ordre
+      const result = await pool.query(updateQuery, [
+        text,
+        color || "#4CAF50",
+        id,
+      ]);
 
       if (result.rows.length > 0) {
         console.log("✅ Mise à jour réussie");

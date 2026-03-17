@@ -170,7 +170,7 @@ function DailyEntry() {
             <p class="prompt-text">
               {isEditing()
                 ? "Modification de votre trace..."
-                : "Trace time ! How was today ?"}
+                : "Trace time ! Comment était ta journée ?"}
             </p>
             <div class="mood-container">
               <label for="mood-select" class="mood-label">
