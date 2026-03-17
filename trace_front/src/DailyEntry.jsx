@@ -13,7 +13,7 @@ function DailyEntry() {
   onMount(async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}//api/entries/latest`,
+        `${import.meta.env.VITE_API_URL}api/entries/latest`,
       );
       if (response.ok) {
         const data = await response.json();
@@ -49,8 +49,8 @@ function DailyEntry() {
 
     // Si on est en train d'éditer, on appelle la route d'update
     const url = isEditing()
-      ? `${import.meta.env.VITE_API_URL}/api/entries/${entryId()}/update`
-      : `${import.meta.env.VITE_API_URL}/api/entries`;
+      ? `${import.meta.env.VITE_API_URL}api/entries/${entryId()}/update`
+      : `${import.meta.env.VITE_API_URL}api/entries`;
 
     // Note : Pour l'update, on ajoute la date seulement si c'est une nouvelle entrée
     if (!isEditing()) formData.append("date", new Date().toISOString());

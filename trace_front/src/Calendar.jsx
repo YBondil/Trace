@@ -12,7 +12,7 @@ function Calendar() {
   onMount(async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/entries/dates`,
+        `${import.meta.env.VITE_API_URL}api/entries/dates`,
       );
       if (response.ok) {
         const data = await response.json();
@@ -26,7 +26,7 @@ function Calendar() {
   const loadEntry = async (id) => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/entries/${id}`,
+        `${import.meta.env.VITE_API_URL}api/entries/${id}`,
       );
       if (response.ok) {
         const data = await response.json();
@@ -48,7 +48,7 @@ function Calendar() {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/entries/${id}`,
+        `${import.meta.env.VITE_API_URL}api/entries/${id}`,
         {
           method: "DELETE", // On utilise bien la méthode DELETE
         },
@@ -60,7 +60,7 @@ function Calendar() {
         // On rappelle le serveur pour mettre à jour la liste des dates
         // (ça va instantanément "décolorer" la case du calendrier !)
         const datesResponse = await fetch(
-          `${import.meta.env.VITE_API_URL}/api/entries/dates`,
+          `${import.meta.env.VITE_API_URL}api/entries/dates`,
         );
         if (datesResponse.ok) {
           const data = await datesResponse.json();
@@ -78,7 +78,7 @@ function Calendar() {
     formData.append("text", editText());
 
     const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/entries/${selectedEntry().id}/update`,
+      `${import.meta.env.VITE_API_URL}api/entries/${selectedEntry().id}/update`,
       {
         method: "POST",
         body: formData,
@@ -388,15 +388,18 @@ function Calendar() {
                 if (!dateObj)
                   return <div style={{ "min-height": "40px" }}></div>;
 
-                // On vérifie si ce jour précis existe dans notre dictionnaire (tracesMap)
+                // La clé de date ne change pas pour cette case, on peut la laisser en const
                 const dateKey = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`;
-                const traceId = tracesMap()[dateKey];
-                const hasTrace = traceId !== undefined;
+
+                // LA CORRECTION : On transforme ça en fonctions pour forcer la réactivité !
+                const traceId = () => tracesMap()[dateKey];
+                const hasTrace = () => traceId() !== undefined;
 
                 return (
                   <div
-                    class={`calendar-day ${hasTrace ? "has-trace" : ""}`}
-                    onClick={() => (hasTrace ? loadEntry(traceId) : null)}
+                    // On ajoute les () pour exécuter nos nouvelles fonctions
+                    class={`calendar-day ${hasTrace() ? "has-trace" : ""}`}
+                    onClick={() => (hasTrace() ? loadEntry(traceId()) : null)}
                   >
                     {dateObj.getDate()}
                   </div>
