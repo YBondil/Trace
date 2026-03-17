@@ -1,14 +1,26 @@
 import { createSignal, onMount, For, Show } from "solid-js";
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 
 function DailyEntry() {
   const [userText, setUserText] = createSignal("");
   const [saved, setSaved] = createSignal(false);
   const [photos, setPhotos] = createSignal([]);
+  const [selectedColor, setSelectedColor] = createSignal("#4CAF50");
 
   // NOUVEAUX ÉTATS
   const [hasEntryToday, setHasEntryToday] = createSignal(false);
   const [isEditing, setIsEditing] = createSignal(false);
   const [entryId, setEntryId] = createSignal(null);
+
+  const colorOptions = [
+    { id: "vert", label: "Anecdote", hex: "#4CAF50" },
+    { id: "rouge", label: "Soirée", hex: "#F44336" },
+    { id: "bleu", label: "Travail", hex: "#2196F3" },
+    { id: "jaune", label: "Sport", hex: "#FFC107" },
+    { id: "violet", label: "Sortie", hex: "#9C27B0" },
+    { id: "orange", label: "Victoire", hex: "#FF9800" },
+    { id: "gris", label: "Rien", hex: "#9E9E9E" },
+  ];
 
   onMount(async () => {
     try {
@@ -26,6 +38,7 @@ function DailyEntry() {
           setHasEntryToday(true);
           setEntryId(data.id);
           setUserText(data.content);
+          if (data.color) setSelectedColor(data.color);
 
           if (data.photoUrls) {
             const loadedPhotos = data.photoUrls.map((url) => ({
@@ -46,7 +59,7 @@ function DailyEntry() {
   const saveText = async () => {
     const formData = new FormData();
     formData.append("text", userText());
-
+    formData.append("color", selectedColor());
     // Si on est en train d'éditer, on appelle la route d'update
     const url = isEditing()
       ? `${import.meta.env.VITE_API_URL}api/entries/${entryId()}/update`
@@ -75,22 +88,74 @@ function DailyEntry() {
     }
   };
 
-  const handlePhotos = (e) => {
-    const files = Array.from(e.target.files);
-    const newPhotos = files.map((file) => ({
-      id: crypto.randomUUID(),
-      file: file,
-      preview: URL.createObjectURL(file),
-    }));
-    setPhotos([...photos(), ...newPhotos]);
-    setSaved(false);
-  };
-
   const deletePhoto = (photo) => {
     setPhotos(photos().filter((item) => item.id !== photo.id));
     setSaved(false);
   };
+  const prendreNouvellePhoto = async () => {
+    try {
+      const image = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.Uri, // Récupère une URI utilisable localement
+        source: CameraSource.Prompt, // Propose à l'utilisateur : Caméra ou Galerie
+      });
 
+      // On convertit le fichier local en Blob/File pour que ton FormData l'accepte
+      const response = await fetch(image.webPath);
+      const blob = await response.blob();
+      const file = new File([blob], `photo_${Date.now()}.jpg`, {
+        type: "image/jpeg",
+      });
+
+      // On ajoute la nouvelle photo au signal existant
+      const newPhoto = {
+        id: crypto.randomUUID(),
+        file: file,
+        preview: image.webPath, // webPath permet l'affichage direct dans l'app
+      };
+
+      setPhotos([...photos(), newPhoto]);
+      setSaved(false);
+    } catch (error) {
+      console.error("Action annulée ou erreur caméra :", error);
+    }
+  };
+  const choisirDepuisGalerie = async () => {
+    try {
+      const images = await Camera.pickImages({
+        quality: 90,
+        limit: 5, // Tu peux limiter le nombre de photos sélectionnables en même temps
+      });
+
+      // On boucle sur toutes les images sélectionnées
+      for (let img of images.photos) {
+        await ajouterPhotoAuState(img.webPath);
+      }
+    } catch (error) {
+      console.error("Sélection annulée", error);
+    }
+  };
+
+  // Fonction utilitaire pour convertir le webPath en File et l'ajouter à SolidJS
+  const ajouterPhotoAuState = async (webPath) => {
+    const response = await fetch(webPath);
+    const blob = await response.blob();
+    const file = new File(
+      [blob],
+      `photo_${Date.now()}_${crypto.randomUUID()}.jpg`,
+      { type: "image/jpeg" },
+    );
+
+    const newPhoto = {
+      id: crypto.randomUUID(),
+      file: file,
+      preview: webPath,
+    };
+
+    setPhotos((prev) => [...prev, newPhoto]);
+    setSaved(false);
+  };
   return (
     <div class="page">
       <div class="date-header">
@@ -107,7 +172,31 @@ function DailyEntry() {
                 ? "Modification de votre trace..."
                 : "Trace time ! How was today ?"}
             </p>
+            <div class="mood-container">
+              <label for="mood-select" class="mood-label">
+                Humeur du jour :
+              </label>
 
+              <select
+                id="mood-select"
+                class="mood-select"
+                value={selectedColor()}
+                onInput={(e) => {
+                  setSelectedColor(e.currentTarget.value);
+                  setSaved(false);
+                }}
+              >
+                <For each={colorOptions}>
+                  {(color) => <option value={color.hex}>{color.label}</option>}
+                </For>
+              </select>
+
+              {/* La pastille de couleur (seul le background est dynamique via le style) */}
+              <div
+                class="mood-indicator"
+                style={{ "background-color": selectedColor() }}
+              />
+            </div>
             <textarea
               id="today"
               class="notebook-textarea"
@@ -123,23 +212,23 @@ function DailyEntry() {
               <button class="btn-save" onClick={saveText}>
                 {saved() ? "Sauvegardé ✓" : "Enregistrer la trace"}
               </button>
-              <label for="photo-upload" class="btn-upload">
-                📸 Ajouter
-              </label>
-              <input
-                id="photo-upload"
-                type="file"
-                class="file-input-hidden"
-                accept="image/*"
-                onChange={handlePhotos}
-                multiple
-              />
 
-              <Show when={isEditing()}>
-                <button class="btn-cancel" onClick={() => setIsEditing(false)}>
-                  Annuler
+              <div style={{ display: "flex", gap: "10px" }}>
+                <button
+                  class="btn-upload"
+                  onClick={prendreNouvellePhoto}
+                  type="button"
+                >
+                  📸 Prendre
                 </button>
-              </Show>
+                <button
+                  class="btn-upload"
+                  onClick={choisirDepuisGalerie}
+                  type="button"
+                >
+                  🖼️ Galerie
+                </button>
+              </div>
             </div>
 
             <div class="photo-gallery">
@@ -164,9 +253,9 @@ function DailyEntry() {
         <div class="already-done-container">
           <div class="status-icon">✨</div>
           <h2 style={{ "margin-bottom": "10px" }}>
-            Vous avez déjà une trace d'aujourd'hui !
+            Tu as déjà une trace d'aujourd'hui !
           </h2>
-          <p>Revenez demain pour une nouvelle exploration.</p>
+          <p>Reviens demain pour une nouvelle exploration.</p>
 
           <div
             style={{

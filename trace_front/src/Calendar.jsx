@@ -98,9 +98,10 @@ function Calendar() {
     const map = {};
     entryDates().forEach((entry) => {
       const d = new Date(entry.date);
-      // On crée une clé textuelle simple "Année-Mois-Jour"
       const key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-      map[key] = entry.id;
+      // On stocke l'objet complet (id + color)
+      // Si une vieille trace n'a pas de couleur, on met la couleur par défaut (var(--accent-color))
+      map[key] = { id: entry.id, color: entry.color || "#c05c3b" };
     });
     return map;
   });
@@ -388,18 +389,28 @@ function Calendar() {
                 if (!dateObj)
                   return <div style={{ "min-height": "40px" }}></div>;
 
-                // La clé de date ne change pas pour cette case, on peut la laisser en const
+                // La clé de la date est générée ICI, pour chaque case
                 const dateKey = `${dateObj.getFullYear()}-${dateObj.getMonth() + 1}-${dateObj.getDate()}`;
 
-                // LA CORRECTION : On transforme ça en fonctions pour forcer la réactivité !
-                const traceId = () => tracesMap()[dateKey];
-                const hasTrace = () => traceId() !== undefined;
+                // On récupère la donnée de la trace (qui contient l'id ET la couleur)
+                const traceData = () => tracesMap()[dateKey];
+                const hasTrace = () => traceData() !== undefined;
 
                 return (
                   <div
-                    // On ajoute les () pour exécuter nos nouvelles fonctions
                     class={`calendar-day ${hasTrace() ? "has-trace" : ""}`}
-                    onClick={() => (hasTrace() ? loadEntry(traceId()) : null)}
+                    onClick={() =>
+                      hasTrace() ? loadEntry(traceData().id) : null
+                    }
+                    // On surcharge la couleur de fond dynamique ici
+                    style={
+                      hasTrace()
+                        ? {
+                            backgroundColor: traceData().color,
+                            color: "white",
+                          }
+                        : {}
+                    }
                   >
                     {dateObj.getDate()}
                   </div>

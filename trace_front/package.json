@@ -9,8 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@capacitor/camera": "^8.0.2",
     "@capacitor/core": "^8.2.0",
     "@capacitor/ios": "^8.2.0",
+    "@capacitor/local-notifications": "^8.0.2",
     "@solidjs/router": "^0.15.4",
     "solid-js": "^1.9.11"
   },

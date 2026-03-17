@@ -47,5 +47,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Trace a besoin d'accéder à votre caméra pour illustrer votre journée.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Trace a besoin de sauvegarder des photos dans votre galerie.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Trace a besoin d'accéder à votre galerie pour que vous puissiez choisir des photos.</string>
 </dict>
 </plist>
