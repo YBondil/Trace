@@ -4,7 +4,6 @@ import pkg from "pg";
 import "dotenv/config";
 import multer from "multer";
 
-// Pour qu'elle devienne celle-ci :
 import {
   S3Client,
   PutObjectCommand,
@@ -13,7 +12,7 @@ import {
 
 const { Pool } = pkg;
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());

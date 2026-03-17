@@ -11,7 +11,9 @@ function Calendar() {
 
   onMount(async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/entries/dates");
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/entries/dates`,
+      );
       if (response.ok) {
         const data = await response.json();
         setEntryDates(data);
@@ -23,7 +25,9 @@ function Calendar() {
 
   const loadEntry = async (id) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/entries/${id}`);
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/entries/${id}`,
+      );
       if (response.ok) {
         const data = await response.json();
         setSelectedEntry(data);
@@ -43,9 +47,12 @@ function Calendar() {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/entries/${id}`, {
-        method: "DELETE", // On utilise bien la méthode DELETE
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/entries/${id}`,
+        {
+          method: "DELETE", // On utilise bien la méthode DELETE
+        },
+      );
 
       if (response.ok) {
         setSelectedEntry(null); // On ferme la vue de la trace
@@ -53,7 +60,7 @@ function Calendar() {
         // On rappelle le serveur pour mettre à jour la liste des dates
         // (ça va instantanément "décolorer" la case du calendrier !)
         const datesResponse = await fetch(
-          "http://localhost:3000/api/entries/dates",
+          `${import.meta.env.VITE_API_URL}/api/entries/dates`,
         );
         if (datesResponse.ok) {
           const data = await datesResponse.json();
@@ -71,7 +78,7 @@ function Calendar() {
     formData.append("text", editText());
 
     const response = await fetch(
-      `http://localhost:3000/api/entries/${selectedEntry().id}/update`,
+      `${import.meta.env.VITE_API_URL}/api/entries/${selectedEntry().id}/update`,
       {
         method: "POST",
         body: formData,
